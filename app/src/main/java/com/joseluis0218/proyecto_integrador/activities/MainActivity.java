@@ -8,10 +8,10 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.joseluis0218.proyecto_integrador.R;
-import com.joseluis0218.proyecto_integrador.adapters.CapturaAdapter;
+import com.joseluis0218.proyecto_integrador.adapters.DatosAdapter;
 import com.joseluis0218.proyecto_integrador.clases.ApiServiceGenerator;
 import com.joseluis0218.proyecto_integrador.interfaces.ApiService;
-import com.joseluis0218.proyecto_integrador.models.Captura;
+import com.joseluis0218.proyecto_integrador.models.Datos;
 
 import java.util.List;
 
@@ -22,16 +22,18 @@ import retrofit2.Response;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    private RecyclerView capturasList;
+    private RecyclerView datosList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        capturasList = findViewById(R.id.lista_capturas);
-        capturasList.setLayoutManager(new LinearLayoutManager(this));
+        datosList = findViewById(R.id.lista_capturas);
+        datosList.setLayoutManager(new LinearLayoutManager(this));
 
-        capturasList.setAdapter(new CapturaAdapter());
+        datosList.setAdapter(new DatosAdapter());
+
         initialize();
     }
 
@@ -39,11 +41,11 @@ public class MainActivity extends AppCompatActivity {
 
         ApiService service = ApiServiceGenerator.createService(ApiService.class);
 
-        Call<List<Captura>> call = service.getCapturas();
+        Call<List<Datos>> call = service.getDatos(1);
 
-        call.enqueue(new Callback<List<Captura>>() {
+        call.enqueue(new Callback<List<Datos>>() {
             @Override
-            public void onResponse(Call<List<Captura>> call, Response<List<Captura>> response) {
+            public void onResponse(Call<List<Datos>> call, Response<List<Datos>> response) {
                 try {
 
                     int statusCode = response.code();
@@ -51,11 +53,18 @@ public class MainActivity extends AppCompatActivity {
 
                     if (response.isSuccessful()) {
 
-                        List<Captura> capturas = response.body();
-                        Log.d(TAG, "capturas: " + capturas);
+                        List<Datos> datos = response.body();
 
-                        CapturaAdapter adapter = (CapturaAdapter) capturasList.getAdapter();
-                        adapter.setCapturas(capturas);
+                        for(int i = 0; i < datos.size(); i++){
+
+                            Datos data = datos.get(i);
+
+                        }
+
+                        Log.d(TAG, "datos: " + datos);
+
+                        DatosAdapter adapter = (DatosAdapter) datosList.getAdapter();
+                        adapter.setDatos(datos);
                         adapter.notifyDataSetChanged();
 
                     } else {
@@ -72,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<List<Captura>> call, Throwable t) {
+            public void onFailure(Call<List<Datos>> call, Throwable t) {
                 Log.e(TAG, "onFailure: " + t.toString());
                 Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
             }
@@ -80,5 +89,5 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-}
 
+}
